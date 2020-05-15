@@ -1,1 +1,1 @@
-module github.com/spacemonkeygo/openssl
+module github.com/Linutronix/golang-openssl
