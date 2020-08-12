@@ -1,3 +1,3 @@
-module github.com/mendersoftware/golang-openssl
+module github.com/mendersoftware/openssl
 
 go 1.14
