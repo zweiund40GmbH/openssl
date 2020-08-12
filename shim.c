@@ -410,7 +410,23 @@ void X_SSL_set_security_level(SSL *ssl, int level) {
 }
 
 int X_SSL_get_security_level(SSL *ssl) {
- return SSL_get_security_level(ssl);
+ int level = 0;
+ SSL_CTX *ctx = NULL;
+
+ if (ssl == NULL) {
+  ctx = SSL_CTX_new(TLS_method());
+  ssl = SSL_new(ctx);
+  if (ssl == NULL || ctx == NULL) {
+   return -1;
+  }
+  level = SSL_get_security_level(ssl);
+  SSL_free(ssl);
+  SSL_CTX_free(ctx);
+ } else {
+  level = SSL_get_security_level(ssl);
+ }
+
+ return level;
 }
 
 long X_SSL_set_options(SSL* ssl, long options) {
