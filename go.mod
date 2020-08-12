@@ -1,1 +1,3 @@
-module github.com/Linutronix/golang-openssl
+module github.com/mendersoftware/golang-openssl
+
+go 1.14

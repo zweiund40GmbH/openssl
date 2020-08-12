@@ -27,7 +27,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/Linutronix/golang-openssl/utils"
+	"github.com/mendersoftware/golang-openssl/utils"
 )
 
 var (
