@@ -1,1 +1,1 @@
-module github.com/Linutronix/golang-openssl
+module github.com/mendersoftware/openssl
