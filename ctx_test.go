@@ -46,3 +46,30 @@ func TestCtxSessCacheSizeOption(t *testing.T) {
 		t.Error("SessSetCacheSize() does not save anything to ctx")
 	}
 }
+
+func TestCtxSetDefaultVerifyLocations(t *testing.T) {
+	ctx, err := NewCtx()
+	if err != nil {
+		t.Error("cant create context")
+	}
+
+	conn, err := Dial("tcp", "google.com:443", ctx, 0)
+	v := conn.VerifyResult()
+
+	if v != UnableToGetIssuerCertLocally {
+		t.Errorf("expected: UnableToGetIssuerCertLocally, got: %d", v)
+	}
+
+	ctx, err = NewCtx()
+	if err != nil {
+		t.Error("cant create context")
+	}
+
+	ctx.SetDefaultVerifyLocations()
+	conn, err = Dial("tcp", "google.com:443", ctx, 0)
+	v = conn.VerifyResult()
+
+	if v != Ok {
+		t.Errorf("expected: Ok, got: %d", v)
+	}
+}
