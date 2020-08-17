@@ -58,7 +58,10 @@ func newCtx(method *C.SSL_METHOD) (*Ctx, error) {
 		return nil, errorFromErrorQueue()
 	}
 	c := &Ctx{ctx: ctx}
-	C.SSL_CTX_set_ex_data(ctx, get_ssl_ctx_idx(), unsafe.Pointer(c))
+	//go vet complains here:
+	//63:48: possibly passing Go type with embedded pointer to C
+	u := unsafe.Pointer(c)
+	C.SSL_CTX_set_ex_data(ctx, get_ssl_ctx_idx(), u)
 	runtime.SetFinalizer(c, func(c *Ctx) {
 		C.SSL_CTX_free(c.ctx)
 	})
