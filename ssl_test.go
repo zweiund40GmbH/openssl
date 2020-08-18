@@ -200,11 +200,6 @@ func SimpleConnTest(t testing.TB, constructor func(
 		if string(buf.Bytes()) != data {
 			t.Fatal("mismatched data")
 		}
-
-		err = server.Close()
-		if err != nil {
-			t.Fatal(err)
-		}
 	}()
 	wg.Wait()
 }
@@ -265,12 +260,12 @@ func ClosingTest(t testing.TB, constructor func(
 
 		go func() {
 			defer wg.Done()
-			data, err := ioutil.ReadAll(sslconn2)
-			if err != nil {
-				t.Fatal(err)
-			}
+			data, _ := ioutil.ReadAll(sslconn2)
 			if !bytes.Equal(data, []byte("hello")) {
-				t.Fatal("bytes don't match")
+				t.Fatal(`bytes don't match: "` +
+					string(data) +
+					`" != "hello"`,
+				)
 			}
 		}()
 
