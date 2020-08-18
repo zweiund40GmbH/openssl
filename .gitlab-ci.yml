@@ -32,6 +32,23 @@ test:unit:
 
     # Install OpenSSL
     - apt-get update && apt-get install -yyq liblzma-dev libssl-dev
+    # Install SoftHSM, OpenSC, GnuTLS
+    - apt-get install -yyq softhsm2 opensc opensc-pkcs11 libengine-pkcs11-openssl gnutls-bin
+    - mkdir -p /softhsm/tokens
+    - echo "directories.tokendir = /softhsm/tokens" > /softhsm/softhsm2.conf
+    - export SOFTHSM2_CONF=/softhsm/softhsm2.conf
+    - softhsm2-util --init-token --free --label unittoken1 --pin 0001 --so-pin 0002 --slot 0
+    - pkcs11-tool --module /usr/lib/softhsm/libsofthsm2.so -l -k --key-type rsa:2048 --id 0003 --label unittestkey0 --pin 0001
+    - pkcs11-tool --module /usr/lib/softhsm/libsofthsm2.so --show-info
+    - pkcs11-tool --module /usr/lib/softhsm/libsofthsm2.so --list-slots
+    - pkcs11-tool --module /usr/lib/softhsm/libsofthsm2.so --list-token-slots
+    - pkcs11-tool --module /usr/lib/softhsm/libsofthsm2.so --list-mechanisms
+    - pkcs11-tool --module /usr/lib/softhsm/libsofthsm2.so --list-objects
+    - p11tool --login --provider=/usr/lib/softhsm/libsofthsm2.so --set-pin=0001 --list-all
+    - export TEST_KEY_URI=`p11tool --login --provider=/usr/lib/softhsm/libsofthsm2.so --set-pin=0001 --list-all 2>/dev/null | grep type=private | awk '{print($NF";pin-value=0001");}'`
+    - echo using $TEST_KEY_URI;
+    - echo -ne "[openssl_init]\nengines=engine_section\n\n[engine_section]\npkcs11 = pkcs11_section\n\n[pkcs11_section]\nengine_id = pkcs11\nMODULE_PATH = /usr/lib/softhsm/libsofthsm2.so\ninit = 0\n" >> /etc/ssl/openssl.cnf
+    - openssl req -new -x509 -subj "/CN=MenderUnits" -engine pkcs11 -keyform engine -key "${TEST_KEY_URI}" -out cert.pem
 
   script:
     # Test if code was formatted with 'go fmt'
@@ -48,6 +65,7 @@ test:unit:
     # Execute go test on every local subpackage (resolved as dependencies) and generate covreage report for each.
     # Test packages pararell (xargs -P)
     - sed -i -e 's/CipherString = DEFAULT@SECLEVEL=2/# CipherString = DEFAULT@SECLEVEL=2/' /etc/ssl/openssl.cnf
+    - export TEST_KEY_URI=`p11tool --login --provider=/usr/lib/softhsm/libsofthsm2.so --set-pin=0001 --list-all 2>/dev/null | grep type=private | awk '{print($NF";pin-value=0001");}'`
     - go test -parallel 1 -count 1 -v -covermode=atomic -coverprofile=coverage.txt -coverpkg ./... ./... || exit $?
 
     # Collect coverage reports
