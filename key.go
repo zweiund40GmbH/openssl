@@ -61,6 +61,8 @@ const (
 	KeyTypeED448   = NID_ED448
 )
 
+const DefaultRSAExponent = 0x10001
+
 type PublicKey interface {
 	// Verifies the data signature using PKCS1.15
 	VerifyPKCS1v15(method Method, data, sig []byte) error
@@ -451,7 +453,7 @@ func LoadPublicKeyFromDER(der_block []byte) (PublicKey, error) {
 
 // GenerateRSAKey generates a new RSA private key with an exponent of 65537.
 func GenerateRSAKey(bits int) (PrivateKey, error) {
-	return GenerateRSAKeyWithExponent(bits, 65537)
+	return GenerateRSAKeyWithExponent(bits, DefaultRSAExponent)
 }
 
 // GenerateRSAKeyWithExponent generates a new RSA private key.
@@ -486,6 +488,8 @@ func GenerateRSAKeyWithExponent(bits int, exponent int) (PrivateKey, error) {
 	}
 	p := &pKey{key: key}
 	runtime.SetFinalizer(p, func(p *pKey) {
+		// At this point the RSA struct pointed to by the "rsa" variable
+		// is owned by the EVP_PKEY struct and will be freed py the Finalizer
 		C.X_EVP_PKEY_free(p.key)
 	})
 	return p, nil
