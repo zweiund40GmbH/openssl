@@ -603,10 +603,10 @@ func (c *Ctx) SessGetCacheSize() int {
 	return int(C.X_SSL_CTX_sess_get_cache_size(c.ctx))
 }
 
-// SetDefaultVerifyLocations
+// SetDefaultVerifyPaths
 // https://www.openssl.org/docs/man1.1.0/man3/SSL_CTX_set_default_verify_paths.html
-// enables automatical loading of default trust store from the `certs' subdirectory
+// enables automatic loading of the default trust store from the `certs' subdirectory
 // and `cert.pem' file in the OPENSSL_DIR (check with `openssl version -d')
-func (c *Ctx) SetDefaultVerifyLocations() int {
+func (c *Ctx) SetDefaultVerifyPaths() int {
 	return int(C.SSL_CTX_set_default_verify_paths(c.ctx))
 }
