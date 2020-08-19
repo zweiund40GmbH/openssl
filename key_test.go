@@ -23,6 +23,7 @@ import (
 	"encoding/hex"
 	pem_pkg "encoding/pem"
 	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -468,6 +469,26 @@ func TestMarshalEd25519(t *testing.T) {
 
 	_, err = loaded_pubkey_from_der.MarshalPKIXPublicKeyDER()
 	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestEngineLoadPrivateKey(t *testing.T) {
+	keyURI := os.Getenv("TEST_KEY_URI")
+	if len(keyURI) < 1 {
+		t.Skip()
+	}
+
+	e, err := EngineById("pkcs11")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	clientPrivateKey, err := EngineLoadPrivateKey(e, keyURI)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if clientPrivateKey == nil {
 		t.Fatal(err)
 	}
 }
