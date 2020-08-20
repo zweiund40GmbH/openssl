@@ -610,3 +610,13 @@ func (c *Ctx) SessGetCacheSize() int {
 func (c *Ctx) SetDefaultVerifyPaths() int {
 	return int(C.SSL_CTX_set_default_verify_paths(c.ctx))
 }
+
+// GetDefaultCertificateDirectory returns the default directory for the system
+// certificates.
+func GetDefaultCertificateDirectory() (string, error) {
+	dir := C.GoString(C.X509_get_default_cert_dir())
+	if dir == "" {
+		return "", errors.New("Failed to get the OpenSSL directory variable")
+	}
+	return dir, nil
+}
