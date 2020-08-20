@@ -65,8 +65,8 @@ func TestCtxSetDefaultVerifyLocations(t *testing.T) {
 		t.Error("cant create context")
 	}
 
-	if ctx.SetDefaultVerifyPaths() != 1 {
-		t.Errorf("set_default_verify_paths OpenSSL call failed")
+	if err := ctx.SetDefaultVerifyPaths(); err != nil {
+		t.Errorf("set_default_verify_paths OpenSSL call failed: %v", err)
 	}
 
 	conn, err = Dial("tcp", "google.com:443", ctx, 0)
