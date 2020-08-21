@@ -76,3 +76,16 @@ func TestCtxSetDefaultVerifyLocations(t *testing.T) {
 		t.Errorf("expected: Ok, got: %d", v)
 	}
 }
+
+// TestGetDefaultCertificateDirectory returns the default directory for CA
+// certificates on the system.
+func TestGetDefaultCertificateDirectory(t *testing.T) {
+	defDir, err := GetDefaultCertificateDirectory()
+	if err != nil {
+		t.Errorf("Failed to get the default certificate directory. '%v'", err)
+	}
+
+	if len(defDir) == 0 {
+		t.Errorf("Error: GetDefaultCertificateDirectory() returned a zero length string, but no error")
+	}
+}

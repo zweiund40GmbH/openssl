@@ -665,3 +665,13 @@ func (c *Ctx) SetDefaultVerifyPaths() error {
 	}
 	return nil
 }
+
+// GetDefaultCertificateDirectory returns the default directory for the system
+// certificates.
+func GetDefaultCertificateDirectory() (string, error) {
+	dir := C.GoString(C.X509_get_default_cert_dir())
+	if dir == "" {
+		return "", errors.New("Failed to get the OpenSSL directory variable")
+	}
+	return dir, nil
+}
