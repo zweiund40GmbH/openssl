@@ -476,7 +476,7 @@ func TestMarshalEd25519(t *testing.T) {
 func TestEngineLoadPrivateKey(t *testing.T) {
 	keyURI := os.Getenv("TEST_KEY_URI")
 	if len(keyURI) < 1 {
-		t.Skip()
+		t.Skip("TEST_KEY_URI not provided, skipping test.")
 	}
 
 	e, err := EngineById("pkcs11")
