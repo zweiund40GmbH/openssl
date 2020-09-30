@@ -15,6 +15,7 @@
 package openssl
 
 import (
+	"net/http"
 	"testing"
 	"time"
 )
@@ -48,12 +49,19 @@ func TestCtxSessCacheSizeOption(t *testing.T) {
 }
 
 func TestCtxSetDefaultVerifyLocations(t *testing.T) {
+	_, err := http.Head("https://example.com")
+	if err != nil {
+		t.Skipf("Get: err: %v", err)
+	}
 	ctx, err := NewCtx()
 	if err != nil {
 		t.Error("cant create context")
 	}
 
 	conn, err := Dial("tcp", "google.com:443", ctx, 0)
+	if err != nil {
+		t.Fatalf("Failed to dial google.com:443. err: %v", err)
+	}
 	v := conn.VerifyResult()
 
 	if v != UnableToGetIssuerCertLocally {
@@ -70,6 +78,9 @@ func TestCtxSetDefaultVerifyLocations(t *testing.T) {
 	}
 
 	conn, err = Dial("tcp", "google.com:443", ctx, 0)
+	if err != nil {
+		t.Fatalf("Failed to dial google.com:443. err: %v", err)
+	}
 	v = conn.VerifyResult()
 
 	if v != Ok {
