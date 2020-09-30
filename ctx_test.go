@@ -54,6 +54,9 @@ func TestCtxSetDefaultVerifyLocations(t *testing.T) {
 	}
 
 	conn, err := Dial("tcp", "google.com:443", ctx, 0)
+	if err != nil {
+		t.Fatalf("Failed to dial google.com:443. err: %v", err)
+	}
 	v := conn.VerifyResult()
 
 	if v != UnableToGetIssuerCertLocally {
@@ -70,6 +73,9 @@ func TestCtxSetDefaultVerifyLocations(t *testing.T) {
 	}
 
 	conn, err = Dial("tcp", "google.com:443", ctx, 0)
+	if err != nil {
+		t.Fatalf("Failed to dial google.com:443. err: %v", err)
+	}
 	v = conn.VerifyResult()
 
 	if v != Ok {
