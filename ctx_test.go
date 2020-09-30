@@ -15,6 +15,7 @@
 package openssl
 
 import (
+	"net/http"
 	"testing"
 	"time"
 )
@@ -48,6 +49,10 @@ func TestCtxSessCacheSizeOption(t *testing.T) {
 }
 
 func TestCtxSetDefaultVerifyLocations(t *testing.T) {
+	_, err := http.Head("https://example.com")
+	if err != nil {
+		t.Skipf("Get: err: %v", err)
+	}
 	ctx, err := NewCtx()
 	if err != nil {
 		t.Error("cant create context")
